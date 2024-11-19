@@ -19,7 +19,7 @@ export const initializePassport = () => {
 
             const user = await userDao.getByEmail(username)
 
-            if (user) return done(null, false, { message: "El usuario ya existe" }) // donde es equivalente a un next() en los middlewares
+            if (user) return done(null, false, { message: "El usuario ya existe" }) 
 
             const cart = await cartDao.create()
 
