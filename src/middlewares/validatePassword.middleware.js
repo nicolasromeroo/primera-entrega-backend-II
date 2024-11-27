@@ -1,6 +1,6 @@
 export const validatePassword = (req = request, res = response, next) => {
     const { password } = req.body;
-    const minLength = 8; // Establecer longitud mínima
+    const minLength = 8; 
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumbers = /\d/.test(password);

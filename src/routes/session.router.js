@@ -9,50 +9,20 @@ import { validatePassword } from "../middlewares/validatePassword.middleware.js"
 import passport from "passport";
 import { createToken, verifyToken } from "../utils/jwt.js";
 import { passportCall } from "../middlewares/passport.middleware.js";
+import { SessionController } from "../controllers/session.controller.js";
 
+
+const sessionController = new SessionController()
 const router = Router()
 
-router.post("/register", validateEmailFormat(), checkEmail(), validatePassword(), passportCall("register"), async (req, res) => {
-    try {
-        res.status(201).json({ status: "success", msg: "Usuario registrado" })
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" });
-    }
-})
+router.post("/register", validateEmailFormat(), checkEmail(), validatePassword(), passportCall("register"), sessionController.register)
 
-router.post("/login", passportCall("login"), async (req, res) => {
-    try {
-        const token = createToken(req.user)
+router.post("/login", passportCall("login"), sessionController.login)
 
-        res.cookie("token", token, { httpOnly: true })
-        res.status(200).json({ status: "success", payload: req.user })
+router.get("/logout", sessionController.logout)
 
-    } catch (error) {
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" });
-    }
-})
+router.get("/current", passportCall("jwt"), authorization("user"), sessionController.current)
 
-router.get("/logout", async (req, res) => {
-    try {
-        req.session.destroy()
-        res.status(200).json({ status: "succes", msg: "session cerrada" })
-    } catch (error) {
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" });
-    }
-})
-
-router.get("/current", passportCall("jwt"), authorization("user"), async (req, res) => {
-    try {
-        const user = await userDao.getById(req.user.id)
-        res.status(200).json({ status: "success", payload: user })
-    } catch (error) {
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" });
-    }
-})
-
-router.get("/admin", passportCall("jwt"), authorization("admin"), async (req, res) => {
-    res.status(200).json({ status: "success", msg: "Bienvenido, administrador!" });
-});
+router.get("/admin", passportCall("jwt"), authorization("admin"), sessionController.admin);
 
 export default router

@@ -4,6 +4,7 @@ import __dirname from "./dirname.js"
 import { connectMongoDB } from "./config/mongoDB.config.js"
 import session from "express-session"
 import { initializePassport } from "./config/passport.config.js"
+import cookieParser from "cookie-parser"
 
 const app = express()
 
@@ -12,6 +13,7 @@ initializePassport()
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser)
 
 app.use(express.static("public"));
 app.use(
